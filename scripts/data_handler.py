@@ -14,23 +14,32 @@ class DataHandler:
         self._filepath = f
 
 
-    def read_file(self):
+    def get_data_from_file(self):
         f = open(self.get_file_path(), "r")
         data = json.load(f)
-        print("Datatype after deserialization : " + str(type(data)))
+        keys, values = zip(*data.items())
 
+        if self.is_file_valid(keys, values) == True:
+            return self.get_slides_data(values)
+
+
+    def is_file_valid(self, keys, values):
         '''
         Checks if the format is appropriate. This application generates one report, therefore there should be only one "presentation" key and one corresponding value (list).
         '''
-        keys, values = zip(*data.items())
         if len(keys) == 1 and keys[0] == "presentation" and len(values) == 1:
-            print("Valid 1")
+            return True
 
+
+    def get_slides_data(self, values):
+        slides_data = []
         for item in values:
             num_of_slides = 0
             for slide_content in item:
-                print(slide_content)
+                #print(slide_content)
                 num_of_slides += 1
-                print(num_of_slides)
+                slides_data.append(slide_content)
+                #print(num_of_slides)
+        return slides_data
 
 

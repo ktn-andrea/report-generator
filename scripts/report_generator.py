@@ -8,6 +8,7 @@ class ReportGenerator():
     def __init__(self):
         Report = Presentation()
 
+
     def generate_slide():
         pass
 
