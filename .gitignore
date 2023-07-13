@@ -1,2 +1,7 @@
 __pycache__/
-results.json
+.vscode/
+env/
+
+.env
+
+output.pptx
