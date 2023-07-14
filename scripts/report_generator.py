@@ -7,10 +7,10 @@ from typing import List
 
 SLIDE_LAYOUT_MODE = 0 
 '''
-0: Title (Title Slide)
-1: Text (Title and Content)
-2: List (Title and Content)
-3: Picture (Blank? , 6)
+0: Title (Title Slide, 0)
+1: Text (Title and Content, 1)
+2: List (Title and Content, 1)
+3: Picture (Title and Content, 1)
 4: Plot (Blank? , 6)
 '''
 
@@ -60,17 +60,17 @@ class ReportGenerator():
                         print("Generating text slide")
                         SLIDE_LAYOUT_MODE = 1
                         self.generate_text_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
-                    elif slide_type == "list":
+                    elif slide_type == "list":  #DONE
                         print("Generating list slide")
-                        SLIDE_LAYOUT_MODE = 1
+                        SLIDE_LAYOUT_MODE = 1  
                         self.generate_list_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
-                    elif slide_type == "picture":
+                    elif slide_type == "picture":  #DONE
                         print("Generating picture slide")
                         SLIDE_LAYOUT_MODE = 1
                         self.generate_picture_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
                     elif slide_type == "plot":
                         print("Generating plot slide")
-                        SLIDE_LAYOUT_MODE = 1
+                        SLIDE_LAYOUT_MODE = 6
                         self.generate_plot_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
 
         self.report.save("Test.pptx")
@@ -93,7 +93,7 @@ class ReportGenerator():
         new_slide = self.report.slides.add_slide(Text_Layout)
         new_slide.shapes.title.text = slide_data.get("title")
         
-        textbox = new_slide.shapes.add_textbox(Inches(3), Inches(1.5),Inches(3), Inches(1))
+        textbox = new_slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
         textbox.text = slide_data.get("content")
         #textframe = textbox.text_frame
         #textframe.text = slide_data.get("content")
@@ -103,10 +103,41 @@ class ReportGenerator():
         print("Text Slide Done")
 
     def generate_list_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print("Creating List Slide....")
         print(slide_data)
+        List_Layout = self.report.slide_layouts[slide_layout]
+        new_slide = self.report.slides.add_slide(List_Layout)
+        new_slide.shapes.title.text = slide_data.get("title")
+
+        textbox = new_slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
+        list_content: list = slide_data.get("content")
+        textframe = textbox.text_frame
+        for level_data in list_content:
+            level_num: int = int(level_data.get("level"))
+            paragraph = textframe.add_paragraph()
+            if level_num == 1:
+                paragraph.text = '- ' + str(level_data.get("text"))
+                paragraph.font.size = Pt(30)
+            elif level_num == 2:
+                paragraph.text = '   ' + str(level_data.get("text"))
+                paragraph.font.size = Pt(20)
+            else:
+                paragraph.text = '     ' + str(level_data.get("text"))
+                paragraph.font.size = Pt(10)
+
+        print("List Slide Done")
 
     def generate_picture_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print("Creating Picture Slide....")
         print(slide_data)
+        Picture_Layout = self.report.slide_layouts[slide_layout]
+        new_slide = self.report.slides.add_slide(Picture_Layout)
+        new_slide.shapes.title.text = slide_data.get("title")
+
+        left = top = Inches(1.8) 
+        new_slide.shapes.add_picture(slide_data.get("content"), left, top)
+
+        print("Picture Slide Done")
 
     def generate_plot_slide(self, slide_data: dict, slide_layout: int) -> None:
         print(slide_data)
