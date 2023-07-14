@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.10
 
 from pptx import Presentation
+from pptx.util import Inches, Pt
 from data_handler import DataHandler
 from typing import List
 
@@ -26,53 +27,86 @@ SLIDE_LAYOUT_MODE = 0
 """
 
 class ReportGenerator():
-    def __init__(self, possible_types: List, possible_keys: List):
-        report = Presentation()
-        self.possible_types = possible_types
-        self.possible_keys = possible_keys
+    def __init__(self, possible_types: List, possible_keys: List) -> None:
+        self.report = Presentation()
+        self.possible_types: List = possible_types
+        self.possible_keys: List = possible_keys
 
 
-    def keys_validation(self, keys):
+    def keys_validation(self, keys: dict.keys) -> bool:
+        print(type(keys))
         for key in keys:
             if key not in self.possible_keys:
                 return False
         return True
 
     def generate_report(self, data: List[dict]):
-        for slide in data:
-            are_keys_valid = self.keys_validation(slide.keys())
+        for raw_slide_data in data:
+            are_keys_valid: bool = self.keys_validation(raw_slide_data.keys())
             if are_keys_valid == False:
                 print("Error: invalid key found")
 
             else:
-                slide_type = slide["type"].lower()
+                slide_type = raw_slide_data["type"].lower()
                 #print(slide)
                 if slide_type not in self.possible_types:
                     print("Error: slide type not supported")
                 else:
-                    if slide_type == "title":
-                        pass
-                    elif slide_type == "text":
-                        pass
+                    if slide_type == "title": #DONE
+                        print("Generating title slide")
+                        SLIDE_LAYOUT_MODE = 0
+                        self.generate_title_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
+                    elif slide_type == "text": #DONE
+                        print("Generating text slide")
+                        SLIDE_LAYOUT_MODE = 1
+                        self.generate_text_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
                     elif slide_type == "list":
-                        pass
+                        print("Generating list slide")
+                        SLIDE_LAYOUT_MODE = 1
+                        self.generate_list_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
                     elif slide_type == "picture":
-                        pass
+                        print("Generating picture slide")
+                        SLIDE_LAYOUT_MODE = 1
+                        self.generate_picture_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
                     elif slide_type == "plot":
-                        pass
+                        print("Generating plot slide")
+                        SLIDE_LAYOUT_MODE = 1
+                        self.generate_plot_slide(raw_slide_data, SLIDE_LAYOUT_MODE)
+
+        self.report.save("Test.pptx")
     
 
-    def generate_title_slide():
-        pass
+    def generate_title_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print("Creating Title Slide....")
+        print(slide_data)
+        Title_Layout = self.report.slide_layouts[slide_layout]
+        new_slide = self.report.slides.add_slide(Title_Layout)
+        new_slide.shapes.title.text = slide_data.get("title")
+        new_slide.placeholders[1].text = slide_data.get("content")
+        
+        print("Title Slide Done")
 
-    def generate_text_slide():
-        pass
+    def generate_text_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print("Creating Text Slide....")
+        print(slide_data)
+        Text_Layout = self.report.slide_layouts[slide_layout]
+        new_slide = self.report.slides.add_slide(Text_Layout)
+        new_slide.shapes.title.text = slide_data.get("title")
+        
+        textbox = new_slide.shapes.add_textbox(Inches(3), Inches(1.5),Inches(3), Inches(1))
+        textbox.text = slide_data.get("content")
+        #textframe = textbox.text_frame
+        #textframe.text = slide_data.get("content")
+        #paragraph = textframe.add_paragraph()
+        #paragraph.text = slide_data.get("content")
+        
+        print("Text Slide Done")
 
-    def generate_list_slide():
-        pass
+    def generate_list_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print(slide_data)
 
-    def generate_picture_slide():
-        pass
+    def generate_picture_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print(slide_data)
 
-    def generate_plot_slide():
-        pass
+    def generate_plot_slide(self, slide_data: dict, slide_layout: int) -> None:
+        print(slide_data)

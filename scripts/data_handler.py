@@ -23,7 +23,7 @@ class DataHandler:
             return self.get_slides_data(values)
 
 
-    def is_file_valid(self, keys, values):
+    def is_file_valid(self, keys: dict.keys, values: dict.values) -> bool:
         '''
         Checks if the format is appropriate. This application generates one report, therefore there should be only one "presentation" key and one corresponding value (list).
         '''
