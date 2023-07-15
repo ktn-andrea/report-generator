@@ -6,6 +6,11 @@
       "content" : "The Sub-Title Text"
     },
     {
+      "type" : "text",
+      "title" : "The Title Text",
+      "content" : "The Long Text"
+    },
+    {
       "type" : "list",
       "title" : "The Title Text",
       "content" : [

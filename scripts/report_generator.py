@@ -36,41 +36,46 @@ class ReportGenerator():
 
     def generate_report(self, data: List[dict]) -> type[Presentation]:
         for raw_slide_data in data:
-            # are_keys_valid: bool = self.keys_validation(raw_slide_data.keys())
-            # if are_keys_valid == False:
-            #     print("Error: invalid key found")
-            #else:
-            slide_type = raw_slide_data["type"].lower()
-            if slide_type not in self.possible_types:
-                print("Error: slide type not supported")
+            are_keys_valid: bool = self.keys_validation(raw_slide_data.keys())
+            if are_keys_valid == False:
+                print("Error: invalid key found")
             else:
-                if slide_type == "title":
-                    print("Generating title slide")
-                    SLIDE_LAYOUT_MODE = 0
-                    Title_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
-                    new_slide = self.report.slides.add_slide(Title_Layout)
-                    self.generate_title_slide(raw_slide_data, new_slide)
-                else: 
-                    SLIDE_LAYOUT_MODE = 5
-                    Content_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
-                    new_slide = self.report.slides.add_slide(Content_Layout)
-                    if slide_type == "text":
-                        print("Generating text slide")
-                        self.generate_text_slide(raw_slide_data, new_slide)
-                    elif slide_type == "list":
-                        print("Generating list slide")
-                        self.generate_list_slide(raw_slide_data, new_slide)
-                    elif slide_type == "picture":
-                        print("Generating picture slide")
-                        self.generate_picture_slide(raw_slide_data, new_slide)
-                    elif slide_type == "plot":
-                        print("Generating plot slide")
-                        self.generate_plot_slide(raw_slide_data, new_slide)
+                slide_type = raw_slide_data["type"].lower()
+                if slide_type not in self.possible_types:
+                    print("Error: slide type not supported")
+                else:
+                    if slide_type == "title":
+                        print("Generating title slide")
+                        SLIDE_LAYOUT_MODE = 0
+
+                        Title_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
+                        new_slide = self.report.slides.add_slide(Title_Layout)
+                        self.generate_title_slide(raw_slide_data, new_slide)
+                    else: 
+                        SLIDE_LAYOUT_MODE = 5
+                        Content_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
+                        new_slide = self.report.slides.add_slide(Content_Layout)
+
+                        if slide_type == "text":
+                            print("Generating text slide")
+                            self.generate_text_slide(raw_slide_data, new_slide)
+                        elif slide_type == "list":
+                            print("Generating list slide")
+                            self.generate_list_slide(raw_slide_data, new_slide)
+                        elif slide_type == "picture":
+                            print("Generating picture slide")
+                            self.generate_picture_slide(raw_slide_data, new_slide)
+                        elif slide_type == "plot":
+                            print("Generating plot slide")
+                            self.generate_plot_slide(raw_slide_data, new_slide)
 
         self.report.save("./data/output.pptx")
     
 
     def generate_title_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+        '''
+        Adds title text and subtitle text on the title slide.
+        '''
         print("Creating Title Slide....")
         print(slide_data)
 
@@ -81,6 +86,9 @@ class ReportGenerator():
 
 
     def generate_text_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+        '''
+        Adds title text and creates textbox for text content on slide. 
+        '''
         print("Creating Text Slide....")
         print(slide_data)
 
@@ -93,6 +101,9 @@ class ReportGenerator():
 
 
     def generate_list_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+        '''
+        Adds title text and creates textbox and paragraphs for list content.
+        '''
         print("Creating List Slide....")
         print(slide_data)
 
@@ -119,6 +130,10 @@ class ReportGenerator():
 
 
     def generate_picture_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+        '''
+        Adds title text and picture on slide.
+        Picture must be in "data" folder
+        '''
         print("Creating Picture Slide....")
         print(slide_data)
 
@@ -132,6 +147,10 @@ class ReportGenerator():
 
 
     def generate_plot_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+        '''
+        Adds title text and creates XyChart. 
+        Data file containing the configuration (x and y axis numbers) must be in "data" folder, separated by ';'.
+        '''
         print("Creating Plot Slide....")
         print(slide_data)
 
