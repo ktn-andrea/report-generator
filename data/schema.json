@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "presentation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "enum": [
+              "The Title Text"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "array"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "level": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "enum": [
+                    "The Level 1 Text",
+                    "The Level 2 Text"
+                  ]
+                }
+              }
+            }
+          },
+          "configuration": {
+            "type": "object",
+            "properties": {
+              "x-label": {
+                "type": "string"
+              },
+              "y-label": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

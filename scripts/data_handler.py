@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.10
 
 import json
+from typing import List
+from jsonschema import validate
+import jsonschema
 
 class DataHandler:
 
@@ -14,32 +17,63 @@ class DataHandler:
         self._filepath = f
 
 
-    def get_data_from_file(self):
-        f = open(self.get_file_path(), "r")
-        data = json.load(f)
+
+    def get_data_from_file(self) -> List[dict]:
+        '''
+        Returns the slides data (value of "presentation" key) from json file if the data is valid according to the schema.
+        '''
+        with open(self.get_file_path(), 'r') as f:
+            data = json.load(f)
+
         keys, values = zip(*data.items())
 
-        if self.is_file_valid(keys, values) == True:
+        isvalid = self.validateJson(data)
+        print(isvalid)
+
+        if isvalid == True:
             return self.get_slides_data(values)
+        else:
+            print("Json file is not valid according to the schema.")
+            exit()
 
 
-    def is_file_valid(self, keys: dict.keys, values: dict.values) -> bool:
+    def validateJson(self, jsondata: dict) -> bool:
         '''
-        Checks if the format is appropriate. This application generates one report, therefore there should be only one "presentation" key and one corresponding value (list).
+        Returns whether the json data given as argument is valid according to the schema file.
         '''
-        if len(keys) == 1 and keys[0] == "presentation" and len(values) == 1:
-            return True
+        with open('./data/schema.json', 'r') as file:
+            reportschema = json.load(file)
 
-
-    def get_slides_data(self, values):
+        try:
+            validate(instance=jsondata, schema=reportschema)
+        except jsonschema.exceptions.ValidationError as err:
+            return False
+        return True
+    
+    def get_slides_data(self, values) -> List[dict]:
+        '''
+        Collects the (list) value of the "presentation" key, which contains the necessary data for creating slides.
+        '''
         slides_data = []
         for item in values:
-            num_of_slides = 0
             for slide_content in item:
-                #print(slide_content)
-                num_of_slides += 1
                 slides_data.append(slide_content)
-                #print(num_of_slides)
         return slides_data
+        
+
+    
+
+
+        
+
+    # def is_file_valid(self, keys: dict.keys, values: dict.values) -> bool:
+        '''
+        Checks whether there is only one "presentation" key and one corresponding value (list).
+        '''
+    #    if len(keys) == 1 and keys[0] == "presentation" and len(values) == 1:
+    #        return True
+
+
+    
 
 
