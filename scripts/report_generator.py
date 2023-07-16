@@ -25,7 +25,7 @@ class ReportGenerator():
         self.possible_keys: List = possible_keys
 
 
-    def keys_validation(self, keys: dict.keys) -> bool:
+    def keys_validation(self, keys: List) -> bool:
         '''
         Check whether the keys are valid.
         This is an extra validation step after the json schema validation.
@@ -36,9 +36,9 @@ class ReportGenerator():
         return True
 
 
-    def generate_report(self, data: List[dict]) -> type[Presentation]:
+    def generate_report(self, data: List[dict]) -> None:
         for raw_slide_data in data:
-            are_keys_valid: bool = self.keys_validation(raw_slide_data.keys())
+            are_keys_valid: bool = self.keys_validation(list(raw_slide_data.keys()))
             if are_keys_valid == False:
                 logging.error("Invalid key found")
             else:
@@ -104,9 +104,9 @@ class ReportGenerator():
         slide.shapes.title.text = slide_data.get("title")
 
         textbox = slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
-        list_content: list = slide_data.get("content")
+        list_content = slide_data.get("content")
         textframe = textbox.text_frame
-        
+
         for level_data in list_content:
             level_num: int = int(level_data.get("level"))
             paragraph = textframe.add_paragraph()

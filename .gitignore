@@ -2,6 +2,5 @@ __pycache__/
 .vscode/
 /env/
 
-.env
-
-output.pptx
+/data/log.txt
+/data/output.pptx

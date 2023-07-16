@@ -28,14 +28,13 @@ class DataHandler:
 
         keys, values = zip(*data.items())
 
-        isvalid = self.validateJson(data)
+        isvalid: bool = self.validateJson(data)
 
         if isvalid == True:
             logging.info("Json file is valid according to the schema.")
             return self.get_slides_data(values)
         else:
-            logging.info("Json file is not valid according to the schema.")
-            logging.fatal("Aborting...")
+            logging.fatal("Json file is not valid according to the schema.")
             exit()
 
 
@@ -64,20 +63,3 @@ class DataHandler:
         logging.info("Extracted slides data")
         return slides_data
         
-
-    
-
-
-        
-
-    # def is_file_valid(self, keys: dict.keys, values: dict.values) -> bool:
-        '''
-        Checks whether there is only one "presentation" key and one corresponding value (list).
-        '''
-    #    if len(keys) == 1 and keys[0] == "presentation" and len(values) == 1:
-    #        return True
-
-
-    
-
-
