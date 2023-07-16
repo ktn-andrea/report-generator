@@ -4,6 +4,8 @@ import json
 from typing import List
 from jsonschema import validate
 import jsonschema
+import logging
+logger = logging.getLogger(__name__)
 
 class DataHandler:
 
@@ -17,7 +19,6 @@ class DataHandler:
         self._filepath = f
 
 
-
     def get_data_from_file(self) -> List[dict]:
         '''
         Returns the slides data (value of "presentation" key) from json file if the data is valid according to the schema.
@@ -28,12 +29,13 @@ class DataHandler:
         keys, values = zip(*data.items())
 
         isvalid = self.validateJson(data)
-        print(isvalid)
 
         if isvalid == True:
+            logging.info("Json file is valid according to the schema.")
             return self.get_slides_data(values)
         else:
-            print("Json file is not valid according to the schema.")
+            logging.info("Json file is not valid according to the schema.")
+            logging.fatal("Aborting...")
             exit()
 
 
@@ -50,6 +52,7 @@ class DataHandler:
             return False
         return True
     
+    
     def get_slides_data(self, values) -> List[dict]:
         '''
         Collects the (list) value of the "presentation" key, which contains the necessary data for creating slides.
@@ -58,6 +61,7 @@ class DataHandler:
         for item in values:
             for slide_content in item:
                 slides_data.append(slide_content)
+        logging.info("Extracted slides data")
         return slides_data
         
 
