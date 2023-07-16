@@ -4,56 +4,198 @@
   "properties": {
     "presentation": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            }
           },
-          "title": {
-            "type": "string",
-            "enum": [
-              "The Title Text"
-            ]
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "content"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            }
           },
-          "content": {
-            "type": [
-              "string",
-              "array"
-            ],
-            "items": {
-              "type": "object",
-              "properties": {
-                "level": {
-                  "type": "integer",
-                  "enum": [
-                    1,
-                    2
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "content"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "level",
+                    "text"
                   ]
                 },
-                "text": {
-                  "type": "string",
-                  "enum": [
-                    "The Level 1 Text",
-                    "The Level 2 Text"
+                {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "level",
+                    "text"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "level",
+                    "text"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "level",
+                    "text"
                   ]
                 }
-              }
+              ],
+              "additionalItems": true
             }
           },
-          "configuration": {
-            "type": "object",
-            "properties": {
-              "x-label": {
-                "type": "string"
-              },
-              "y-label": {
-                "type": "string"
-              }
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "content"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
             }
-          }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "content"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "configuration": {
+              "type": "object",
+              "properties": {
+                "x-label": {
+                  "type": "string"
+                },
+                "y-label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "x-label",
+                "y-label"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "content",
+            "configuration"
+          ]
         }
-      }
+      ],
+      "additionalItems": true
     }
-  }
+  },
+  "additionalProperties": false,
+  "additionalItems": false,
+  "required": [
+    "presentation"
+  ]
 }
