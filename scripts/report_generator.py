@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.10
+#!/usr/bin/env python3.9
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
@@ -7,6 +7,7 @@ from pptx.enum.chart import XL_CHART_TYPE
 from typing import List
 import numpy as np
 import logging
+from os import path
 from pathlib import Path
 logger = logging.getLogger(__name__)
 
@@ -61,9 +62,14 @@ class ReportGenerator():
 
     @staticmethod
     def save_output(self) -> None:
-        logging.info("Saving result to ./data/output.pptx")
-        self.ppt.save("./data/output.pptx")
-
+        output_path = "./data/output.pptx"
+        logging.info("Attempting to save result to {}".format(output_path))
+        try:
+            self.ppt.save(output_path)
+            logging.info("Result saved to ./data/output.pptx")
+        except IOError:
+            logging.error("Could not save result to {}".format(output_path))
+            
 
 
 class TitleSubtitleSlide(ReportGenerator):
@@ -140,10 +146,13 @@ class TitleOnlySlide(ReportGenerator):
         self.new_slide = self.ppt.slides.add_slide(self.Content_Layout)
         self.new_slide.shapes.title.text = slide_data.get("title")
         left = top = Inches(1.8) 
-        picture_location = "./data/" + slide_data.get("content")
-        self.new_slide.shapes.add_picture(picture_location, left, top)
-        logging.info("Picture Slide Done")
-
+        picture_path = "./data/" + slide_data.get("content")
+        if path.isfile(picture_path):
+            self.new_slide.shapes.add_picture(picture_path, left, top)
+            logging.info("Picture Slide Done")
+        else:
+            logging.error("Picture not found in data folder - provide only the name of the file")
+    
 
     def generate_plot_slide(self, slide_data: dict) -> None:
         '''
@@ -159,19 +168,24 @@ class TitleOnlySlide(ReportGenerator):
 
         plot_file_suffix = Path(slide_data.get('content')).suffix
         plot_file_path = "./data/" + slide_data.get('content').replace(plot_file_suffix, '.csv')
-        arr = np.loadtxt(plot_file_path, delimiter=';', dtype = float)
-        for a in arr:
-            series.add_data_point(a[0], a[1])
-            # logging.info("X value: {}, Y value: {}".format(a[0], a[1]))
+        if path.isfile(plot_file_path):
+            arr = np.loadtxt(plot_file_path, delimiter=';', dtype = float)
+            for a in arr:
+                series.add_data_point(a[0], a[1])
+                # logging.info("X value: {}, Y value: {}".format(a[0], a[1]))
+            
+            x, y, cx, cy = Inches(2), Inches(2), Inches(6), Inches(4.5)
+            chart = self.new_slide.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data).chart
+            
+            axis_labels: dict = slide_data.get("configuration")
+            category_axis_title = chart.category_axis.axis_title
+            category_axis_title.text_frame.text = axis_labels.get("x-label")
+            value_axis_title = chart.value_axis.axis_title
+            value_axis_title.text_frame.text = axis_labels.get("y-label")
+            logging.info("Plot Slide Done")
+        else:
+            logging.error("Plot file not found in data folder - provide only the name of the file")
+
         
-        x, y, cx, cy = Inches(2), Inches(2), Inches(6), Inches(4.5)
-        chart = self.new_slide.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data).chart
-        
-        axis_labels: dict = slide_data.get("configuration")
-        category_axis_title = chart.category_axis.axis_title
-        category_axis_title.text_frame.text = axis_labels.get("x-label")
-        value_axis_title = chart.value_axis.axis_title
-        value_axis_title.text_frame.text = axis_labels.get("y-label")
-        logging.info("Plot Slide Done")
 
     

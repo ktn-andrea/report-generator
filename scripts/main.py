@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.10
+#!/usr/bin/env python3.9
 
 import sys, logging, timeit, pathlib
 from typing import List 
@@ -43,14 +43,14 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         arg_extension = pathlib.Path(sys.argv[1]).suffix
         if arg_extension == ".json":
-            logging.info('Application started')
+            logging.info('Starting application')
             start: float = timeit.default_timer()
             main()
-        else: 
-            logging.fatal("Please provide one input .json file as an argument.")
-            sys.exit()
+        else:
+            logging.fatal("Error: argument is not a json file.")
+            raise Exception("The argument should have a .json extension.")
     else:
-        logging.fatal("Please provide one input .json file as an argument.")
-        sys.exit()
+        logging.fatal("Error: one argument should be given.")
+        raise Exception("Please provide one input .json file as an argument.")
     
         

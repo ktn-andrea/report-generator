@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.10
+#!/usr/bin/env python3.9
 
 import json
 from typing import List
@@ -23,31 +23,42 @@ class DataHandler:
         '''
         Returns the slides data (value of "presentation" key) from json file if the data is valid according to the schema.
         '''
-        with open(self.get_file_path(), 'r') as f:
-            data = json.load(f)
+        try:
+            with open(self.get_file_path(), 'r') as f:
+                try:
+                    data = json.load(f)
+                except:
+                    logging.fatal("Could not read data from file")
+                    raise
+        except IOError as e:
+            logging.fatal("Error: could not open file {}".format(e.filename))
+            raise
+            
         keys, values = zip(*data.items())
-
         isvalid: bool = self.validateJson(data)
         if isvalid == True:
             logging.info("Json file is valid according to the schema.")
             return self.get_slides_data(values)
         else:
             logging.fatal("Json file is not valid according to the schema.")
-            exit()
+            raise Exception("Invalid json file")
 
 
     def validateJson(self, jsondata: dict) -> bool:
         '''
         Returns whether the json data given as argument is valid according to the schema file.
         '''
-        with open('./data/schema.json', 'r') as file:
-            reportschema = json.load(file)
         try:
-            validate(instance=jsondata, schema=reportschema)
-        except jsonschema.exceptions.ValidationError as err:
-            return False
-        return True
-    
+            with open('./data/schema.json', 'r') as file:
+                reportschema = json.load(file)
+            try:
+                validate(instance=jsondata, schema=reportschema)
+            except jsonschema.exceptions.ValidationError as err:
+                return False
+            return True
+        except IOError as e:
+            logging.fatal("Error: could not open schema {} - schema file should be in ./data/ folder.".format(e.filename))
+            raise
     
     def get_slides_data(self, values) -> List[dict]:
         '''
