@@ -6,24 +6,17 @@ from pptx.chart.data import XyChartData
 from pptx.enum.chart import XL_CHART_TYPE
 from typing import List
 import numpy as np
-from typing import NewType
 import logging
+from pathlib import Path
 logger = logging.getLogger(__name__)
-
-
-'''
-0: Title and Subtitle Slide
-5: Title Only Slide
-'''
-SLIDE_LAYOUT_MODE = 0 
-
 
 class ReportGenerator():
     def __init__(self, possible_types: List, possible_keys: List) -> None:
-        self.report = Presentation()
         self.possible_types: List = possible_types
         self.possible_keys: List = possible_keys
-
+        self.ppt = Presentation()
+        self.Title_Layout = self.ppt.slide_layouts[0]
+        self.Content_Layout = self.ppt.slide_layouts[5]
 
     def keys_validation(self, keys: List) -> bool:
         '''
@@ -35,8 +28,10 @@ class ReportGenerator():
                 return False
         return True
 
-
     def generate_report(self, data: List[dict]) -> None:
+        '''
+        Generates slides from slide data (dictionary) if the keys and slide type (the value of "type" key) are valid.
+        '''
         for raw_slide_data in data:
             are_keys_valid: bool = self.keys_validation(list(raw_slide_data.keys()))
             if are_keys_valid == False:
@@ -48,62 +43,77 @@ class ReportGenerator():
                 else:
                     if slide_type == "title":
                         logging.info("Generating title slide....")
-                        SLIDE_LAYOUT_MODE = 0
-
-                        Title_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
-                        new_slide = self.report.slides.add_slide(Title_Layout)
-                        self.generate_title_slide(raw_slide_data, new_slide)
+                        TitleSubtitleSlide.generate_title_slide(self, raw_slide_data)
                     else: 
-                        SLIDE_LAYOUT_MODE = 5
-                        Content_Layout = self.report.slide_layouts[SLIDE_LAYOUT_MODE]
-                        new_slide = self.report.slides.add_slide(Content_Layout)
-
                         if slide_type == "text":
                             logging.info("Generating text slide....")
-                            self.generate_text_slide(raw_slide_data, new_slide)
+                            TitleOnlySlide.generate_text_slide(self, raw_slide_data)
                         elif slide_type == "list":
                             logging.info("Generating list slide....")
-                            self.generate_list_slide(raw_slide_data, new_slide)
+                            TitleOnlySlide.generate_list_slide(self, raw_slide_data)
                         elif slide_type == "picture":
                             logging.info("Generating picture slide....")
-                            self.generate_picture_slide(raw_slide_data, new_slide)
+                            TitleOnlySlide.generate_picture_slide(self, raw_slide_data)
                         elif slide_type == "plot":
                             logging.info("Generating plot slide....")
-                            self.generate_plot_slide(raw_slide_data, new_slide)
+                            TitleOnlySlide.generate_plot_slide(self, raw_slide_data)
 
+
+    @staticmethod
+    def save_output(self) -> None:
         logging.info("Saving result to ./data/output.pptx")
-        self.report.save("./data/output.pptx")
-    
+        self.ppt.save("./data/output.pptx")
 
-    def generate_title_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+
+
+class TitleSubtitleSlide(ReportGenerator):
+    '''
+    Used to generate "title" slide types.
+    Uses the parent class' Title_Layout object, where the layout mode is 0.
+    '''
+    def __init__(self) -> None:
+        super().__init__()
+
+
+    def generate_title_slide(self, slide_data: dict) -> None:
         '''
         Adds title text and subtitle text on the title slide.
         '''
-        slide.shapes.title.text = slide_data.get("title")
-        slide.placeholders[1].text = slide_data.get("content")
-        
+        self.new_slide = self.ppt.slides.add_slide(self.Title_Layout)
+        self.new_slide.shapes.title.text = slide_data.get("title")
+        self.new_slide.placeholders[1].text = slide_data.get("content")
         logging.info("Title Slide Done")
 
 
-    def generate_text_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+
+class TitleOnlySlide(ReportGenerator):
+    '''
+    Used to generate "text", "list", "picture" and "plot" slide types.
+    Uses the parent class' Content_Layout object, where the layout mode is 5.
+    '''
+    def __init__(self) -> None:
+        super().__init__()
+
+
+    def generate_text_slide(self, slide_data: dict) -> None:
         '''
         Adds title text and creates textbox for text content on slide. 
         '''
-        slide.shapes.title.text = slide_data.get("title")
-        #slide.placeholders[1].text = slide_data.get("content")
-        textbox = slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
+        self.new_slide = self.ppt.slides.add_slide(self.Content_Layout)
+        self.new_slide.shapes.title.text = slide_data.get("title")
+        textbox = self.new_slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
         textbox.text = slide_data.get("content")
-        
         logging.info("Text Slide Done")
 
 
-    def generate_list_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+    def generate_list_slide(self, slide_data: dict) -> None:
         '''
         Adds title text and creates textbox and paragraphs for list content.
         '''
-        slide.shapes.title.text = slide_data.get("title")
+        self.new_slide = self.ppt.slides.add_slide(self.Content_Layout)
+        self.new_slide.shapes.title.text = slide_data.get("title")
 
-        textbox = slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
+        textbox = self.new_slide.shapes.add_textbox(Inches(1), Inches(1.5),Inches(3), Inches(1))
         list_content = slide_data.get("content")
         textframe = textbox.text_frame
 
@@ -119,49 +129,49 @@ class ReportGenerator():
             else:
                 paragraph.text = '            ' + str(level_data.get("text"))
                 paragraph.font.size = Pt(10)
-
         logging.info("List Slide Done")
 
 
-    def generate_picture_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+    def generate_picture_slide(self, slide_data: dict) -> None:
         '''
         Adds title text and picture on slide.
         Picture must be in "data" folder
         '''
-        slide.shapes.title.text = slide_data.get("title")
-
+        self.new_slide = self.ppt.slides.add_slide(self.Content_Layout)
+        self.new_slide.shapes.title.text = slide_data.get("title")
         left = top = Inches(1.8) 
         picture_location = "./data/" + slide_data.get("content")
-        slide.shapes.add_picture(picture_location, left, top)
-
+        self.new_slide.shapes.add_picture(picture_location, left, top)
         logging.info("Picture Slide Done")
 
 
-    def generate_plot_slide(self, slide_data: dict, slide: type[Presentation]) -> None:
+    def generate_plot_slide(self, slide_data: dict) -> None:
         '''
         Adds title text and creates XyChart. 
         Data file containing the configuration (x and y axis numbers) must be in "data" folder, separated by ';'.
         '''
-        slide.shapes.title.text = slide_data.get("title")
-
-        plot_file = "./data/" + slide_data.get('content').replace('.dat', '.csv')
-        arr = np.loadtxt(plot_file, delimiter=';', dtype = float)
+        self.new_slide = self.ppt.slides.add_slide(self.Content_Layout)
+        self.new_slide.shapes.title.text = slide_data.get("title")
 
         chart_data = XyChartData()
         series = chart_data.add_series('Series')
         series.has_title = False
-        
+
+        plot_file_suffix = Path(slide_data.get('content')).suffix
+        plot_file_path = "./data/" + slide_data.get('content').replace(plot_file_suffix, '.csv')
+        arr = np.loadtxt(plot_file_path, delimiter=';', dtype = float)
         for a in arr:
             series.add_data_point(a[0], a[1])
             # logging.info("X value: {}, Y value: {}".format(a[0], a[1]))
         
         x, y, cx, cy = Inches(2), Inches(2), Inches(6), Inches(4.5)
-        c = slide.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data).chart
+        chart = self.new_slide.shapes.add_chart(XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data).chart
         
         axis_labels: dict = slide_data.get("configuration")
-        category_axis_title = c.category_axis.axis_title
+        category_axis_title = chart.category_axis.axis_title
         category_axis_title.text_frame.text = axis_labels.get("x-label")
-        value_axis_title = c.value_axis.axis_title
+        value_axis_title = chart.value_axis.axis_title
         value_axis_title.text_frame.text = axis_labels.get("y-label")
- 
         logging.info("Plot Slide Done")
+
+    

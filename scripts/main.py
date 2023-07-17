@@ -4,6 +4,7 @@ import sys, logging, timeit, pathlib
 from typing import List 
 from report_generator import ReportGenerator
 from data_handler import DataHandler
+from report_generator import ReportGenerator
 
 
 POSSIBLE_TYPES = ["title", "text", "list", "picture", "plot"]
@@ -20,6 +21,7 @@ def main():
 
     generator: type[ReportGenerator] = ReportGenerator(POSSIBLE_TYPES, POSSIBLE_KEYS)
     generator.generate_report(slides_data)
+    generator.save_output(generator)
 
     end: float = timeit.default_timer()
     logging.info('Finished in: {} seconds.'.format(end-start))
@@ -28,6 +30,9 @@ def main():
 ##################################################################
 
 if __name__ == '__main__':
+    '''
+    Check Python version and argument - only one .json file path should be provided.
+    '''
 
     logging.basicConfig(filename='./data/log.txt', filemode='a', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))

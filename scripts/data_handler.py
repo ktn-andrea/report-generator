@@ -25,11 +25,9 @@ class DataHandler:
         '''
         with open(self.get_file_path(), 'r') as f:
             data = json.load(f)
-
         keys, values = zip(*data.items())
 
         isvalid: bool = self.validateJson(data)
-
         if isvalid == True:
             logging.info("Json file is valid according to the schema.")
             return self.get_slides_data(values)
@@ -44,7 +42,6 @@ class DataHandler:
         '''
         with open('./data/schema.json', 'r') as file:
             reportschema = json.load(file)
-
         try:
             validate(instance=jsondata, schema=reportschema)
         except jsonschema.exceptions.ValidationError as err:
