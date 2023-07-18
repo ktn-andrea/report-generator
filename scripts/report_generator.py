@@ -66,7 +66,7 @@ class ReportGenerator():
         logging.info("Attempting to save result to {}".format(output_path))
         try:
             self.ppt.save(output_path)
-            logging.info("Result saved to ./data/output.pptx")
+            logging.info("Result saved to {}".format(output_path))
         except IOError:
             logging.error("Could not save result to {}".format(output_path))
             

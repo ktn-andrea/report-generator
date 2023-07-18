@@ -14,9 +14,9 @@ def main():
     '''
     Takes a valid .json file as an argument and uses it to generate a .pptx report.
     '''
-    FILE_PATH = pathlib.Path(sys.argv[1])
+    file_path = pathlib.Path(sys.argv[1])
 
-    raw_data: type[DataHandler] = DataHandler(FILE_PATH)
+    raw_data: type[DataHandler] = DataHandler(file_path)
     slides_data: List[dict] = raw_data.get_data_from_file()
 
     generator: type[ReportGenerator] = ReportGenerator(POSSIBLE_TYPES, POSSIBLE_KEYS)
@@ -33,12 +33,11 @@ if __name__ == '__main__':
     '''
     Check Python version and argument - only one .json file path should be provided.
     '''
-
     logging.basicConfig(filename='./data/log.txt', filemode='a', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
     if sys.version_info[0] != 3:
-        logging.error("Python version 3 is needed to run this program.")
+        logging.warn("Python version 3 is needed to run this program.")
     
     if len(sys.argv) == 2:
         arg_extension = pathlib.Path(sys.argv[1]).suffix

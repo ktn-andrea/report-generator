@@ -8,7 +8,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 class DataHandler:
-
     def __init__(self, file_path):
         self.file_path = file_path
 
